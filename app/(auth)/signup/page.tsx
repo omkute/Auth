@@ -22,7 +22,9 @@ function SignUp() {
     setError('');
     setLoading(true);
     if (!email || !username || !password) {
-      alert(" All the feilds are necessary")
+      setError("All the feilds are mandatory")
+      setLoading(false)
+      return
     }
 
     try {
@@ -38,14 +40,14 @@ function SignUp() {
       if (res.ok) {
         
         toast.success('SignUp Successful');
-
         router.push('/dashboard');
       } else if (res.status === 422 && data.errors) {
         const errors: { [key: string]: string } = {}
         data.errors.forEach((err: { path: string; message: string }) => {
-          errors[err.path] = err.message
+          const errorMessage = errors[err.path] = err.message
+          setError(errorMessage)
         })
-        setFieldErrors(errors)
+        
       }
 
       else {
@@ -58,8 +60,8 @@ function SignUp() {
       setLoading(false);
     }
   };
-  if (loading) return <p>Loading...</p>
-  if (error) return <p>Error...</p>
+  // if (loading) return <p>Loading...</p>
+  // if (error) return <p>Error...</p>
 
   return (
     <div className="bg-muted flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
@@ -105,9 +107,12 @@ function SignUp() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+            {error ? <p className=" text-red-400">{error}</p> : ""}
+
           </div>
           <Button type="submit" onClick={handleSubmit} className="w-full cursor-pointer">
-            Signup
+           {loading ? "Loading ..." : "Signup"}
+
           </Button>
           <div className=" flex space-x-3">
             <p> Already have one ?</p>

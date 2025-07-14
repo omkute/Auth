@@ -14,6 +14,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [feildErrors, setFeildErrors] = useState("")
 
 
 
@@ -23,13 +24,15 @@ export default function LoginPage() {
     setLoading(true);
 
     if (!email || !password) {
-      alert(" All the feilds are necessary")
+      setError("All the Feilds are mandatory")
+      setLoading(false)
+      return
     }
 
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
-        headers: {"Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
       })
 
@@ -38,9 +41,18 @@ export default function LoginPage() {
       if (res.ok) {
 
         toast.success('Login Successful');
-      } else {
+      } else if (res.status === 422 && data.errors) {
+        const parsedErrors = JSON.parse(data.error)
+
+        const errorMessages = parsedErrors.map((error: any) => error.message).join(', ')
+
+        setError(errorMessages)
+        // toast.error(errorMessages)
+        return
+      }
+      else {
         setError(data.error)
-        toast.error('Username or Password are invalid');
+        // toast.error('Username or Password are invalid');
         // alert(data.error || "Something went wrong.")
       }
 
@@ -51,8 +63,8 @@ export default function LoginPage() {
     }
   };
 
-  if (loading) return <p>Loading...</p>
-  if (error) return <p>Error...,{error}</p>
+  // if (loading) return <p>Loading...</p>
+  // if (error) return <p>Error...,{error}</p>
 
 
   return (
@@ -85,13 +97,15 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+            {error ? <p className=" text-red-400">{error}</p> : ""}
+
           </div>
           <Button type="submit" onClick={handleSubmit} className="w-full cursor-pointer">
-            Login
+            {loading ? "Loading ..." : "Login"}
           </Button>
           <div className=" flex space-x-3">
             <p> Create new one ?</p>
-            <Link className=" font-bold" href='signup'>SignUp</Link>
+            <Link className=" font-bold" href='signup'>Signup</Link>
           </div>
         </div>
       </div>
