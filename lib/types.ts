@@ -1,3 +1,4 @@
+import type { Types } from 'mongoose';
 
 export interface Users {
     id: string,
@@ -14,6 +15,28 @@ export interface SessionPayload {
   email: string;
   role: string;
   expiresAt: Date;
+}
+export interface RefreshTokenPayload {
+  sessionId: string;
+  userId: string;
+  expiresAt: number;
+}
+
+export interface AccessTokenPlayload {
+  userId: string;
+  sessionId: string;
+  username: string;
+  role: string;
+  expiresAt: number;
+}
+export interface Session{
+ sessionId: string;
+  userId: string;
+  refreshToken: string;
+  userAgent?: string;
+  ip?: string;
+  expiresAt: Date;
+  absoluteExpiry: Date;
 }
 
 export interface SafeUser {

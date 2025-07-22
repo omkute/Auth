@@ -41,6 +41,7 @@ export default function LoginPage() {
       if (res.ok) {
 
         toast.success('Login Successful');
+        
       } else if (res.status === 422 && data.errors) {
         const parsedErrors = JSON.parse(data.error)
 
